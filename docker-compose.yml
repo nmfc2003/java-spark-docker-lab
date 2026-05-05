@@ -1,0 +1,52 @@
+services:
+  spark-master:
+    image: spark:3.5.8
+    container_name: java-spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.master.Master
+      - --host
+      - spark-master
+      - --port
+      - "7077"
+      - --webui-port
+      - "8080"
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+    volumes:
+      - ./data:/opt/spark-data
+      - ./output:/opt/spark-output
+
+  spark-worker:
+    image: spark:3.5.8
+    container_name: java-spark-worker
+    depends_on:
+      - spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - --webui-port
+      - "8081"
+      - --cores
+      - "2"
+      - --memory
+      - 2G
+      - spark://spark-master:7077
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./data:/opt/spark-data
+      - ./output:/opt/spark-output
+
+  spark-client:
+    build:
+      context: .
+    depends_on:
+      - spark-master
+      - spark-worker
+    environment:
+      - SPARK_MASTER_URL=spark://spark-master:7077
+    volumes:
+      - ./data:/opt/spark-data
+      - ./output:/opt/spark-output

@@ -1,0 +1,6 @@
+product_id,product_name,category,base_price
+p1,ultrabook-pro,laptops,749.00
+p2,docking-station,accessories,35.00
+p3,noise-cancel-headset,audio,119.00
+p4,mechanical-switch-pack,accessories,12.00
+p5,usb-c-cable,accessories,19.50

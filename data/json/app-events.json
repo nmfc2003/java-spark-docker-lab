@@ -1,0 +1,6 @@
+{"event_id":"e1","event_time":"2026-05-01T09:00:00","user_id":"u1","event_type":"page_view","device":"web","tags":["docs","spark"],"metadata":{"plan":"trial","country":"IL"}}
+{"event_id":"e2","event_time":"2026-05-01T09:03:00","user_id":"u1","event_type":"search","device":"web","tags":["search","spark"],"metadata":{"plan":"trial","country":"IL"}}
+{"event_id":"e3","event_time":"2026-05-01T09:10:00","user_id":"u2","event_type":"page_view","device":"ios","tags":["docs"],"metadata":{"plan":"free","country":"US"}}
+{"event_id":"e4","event_time":"2026-05-01T09:25:00","user_id":"u3","event_type":"checkout","device":"web","tags":["billing","conversion"],"metadata":{"plan":"team","country":"DE"}}
+{"event_id":"e5","event_time":"2026-05-02T10:05:00","user_id":"u2","event_type":"page_view","device":"android","tags":["pricing"],"metadata":{"plan":"free","country":"US"}}
+{"event_id":"e6","event_time":"2026-05-02T10:15:00","user_id":"u4","event_type":"page_view","device":"web","tags":[],"metadata":{"plan":"enterprise","country":"GB"}}

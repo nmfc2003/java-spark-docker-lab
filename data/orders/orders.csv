@@ -1,0 +1,8 @@
+order_id,category,item,quantity,unit_price
+1001,books,algorithms-handbook,2,35.00
+1002,gadgets,usb-hub,1,24.99
+1003,books,system-design-notes,1,42.50
+1004,kitchen,coffee-grinder,1,79.00
+1005,gadgets,mechanical-keyboard,1,120.00
+1006,books,java-interview-guide,3,18.00
+1007,kitchen,espresso-cups,4,12.50

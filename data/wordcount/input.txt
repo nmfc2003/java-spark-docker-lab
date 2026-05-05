@@ -1,0 +1,3 @@
+Spark makes it easy to scale data processing.
+Java teams can test Spark jobs locally with Docker.
+Spark jobs are easier to reason about when the input data is small first.

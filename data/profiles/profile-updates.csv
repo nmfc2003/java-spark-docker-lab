@@ -1,0 +1,8 @@
+user_id,email,city,status,updated_at,source
+u1, ALICE@example.com ,tel aviv,active,2026-05-01 09:00:00,crm
+u1,alice@example.com,Tel Aviv,active,2026-05-02 08:30:00,support
+u2,bob@example.com,new york,paused,2026-05-01 10:00:00,crm
+u2,,new york,active,2026-05-03 12:15:00,billing
+u3,carol@example.com,london,,2026-05-01 14:00:00,import
+u3, carol@example.com ,London,active,2026-05-04 09:45:00,app
+u4, ,berlin,trial,2026-05-02 16:20:00,app

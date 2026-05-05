@@ -1,0 +1,6 @@
+customer_id,customer_name,region,segment
+c1,Ada North,EMEA,team
+c2,Ben Ortiz,NA,individual
+c3,Chloe Weiss,EMEA,enterprise
+c4,Diego Park,LATAM,individual
+c5,Ella Stone,NA,team

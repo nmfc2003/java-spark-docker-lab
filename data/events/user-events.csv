@@ -1,0 +1,9 @@
+user_id,event_time,event_type,page
+u1,2026-05-01T09:00:00,view,home
+u1,2026-05-01T09:05:00,search,arrays
+u1,2026-05-01T09:12:00,click,two-sum
+u1,2026-05-01T10:10:00,view,pricing
+u2,2026-05-01T08:30:00,view,landing
+u2,2026-05-01T08:40:00,signup,trial
+u2,2026-05-01T09:50:00,view,docs
+u2,2026-05-01T10:05:00,click,spark-job
