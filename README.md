@@ -296,3 +296,38 @@ make down
   - Fix ownership/permissions on `./output` so Docker can write files.
 - **Ports 8080/8081 already in use**
   - Stop conflicting processes or change port mappings in `docker-compose.yml`.
+
+## Spark UI and History Server
+
+Spark exposes different UIs for different scopes:
+
+- `http://localhost:8080` = **Spark Master UI** (cluster-level scheduling/executors summary).
+- `http://localhost:8081` = **Spark Worker UI** (worker-level resources and executors).
+- `http://localhost:4040` = **Live Spark application (driver) UI**.
+  - This is available only while a Spark app is running.
+- `http://localhost:18080` = **Spark History Server** for completed applications.
+  - Completed jobs should be inspected here, not with sleep hacks.
+
+### Observability workflow
+
+```bash
+./scripts/start-playground.sh
+./scripts/submit-java.sh scratch
+```
+
+- While `scratch` is running, open `http://localhost:4040` to inspect live DAG/stages/jobs.
+- After it finishes, open `http://localhost:18080` and inspect the completed app.
+
+### Why 4040 may disappear quickly
+
+Short jobs can complete before you switch tabs. That is expected. The persistent place to inspect finished runs is History Server on `18080` with event logs from `./spark-events`.
+
+### Event log maintenance
+
+If you want to reset local history:
+
+```bash
+./scripts/clean-spark-events.sh
+```
+
+This clears local Spark event logs and removes app history from History Server.

@@ -63,7 +63,29 @@ services:
     command: ["tail", "-f", "/dev/null"]
     environment:
       - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_DRIVER_BIND_ADDRESS=0.0.0.0
+      - SPARK_DRIVER_HOST=spark-client-dev
+    ports:
+      - "4040:4040"
     volumes:
       - ./:/workspace/java-spark-docker-lab
       - ./data:/opt/spark-data
       - ./output:/opt/spark-output
+      - ./spark-events:/opt/spark-events
+
+  spark-history-server:
+    image: spark:3.5.8
+    container_name: java-spark-history-server
+    depends_on:
+      - spark-master
+      - spark-client-dev
+    environment:
+      - SPARK_HISTORY_OPTS=-Dspark.history.fs.logDirectory=file:/opt/spark-events -Dspark.history.ui.port=18080
+    command:
+      - /bin/bash
+      - -lc
+      - mkdir -p /opt/spark-events && /opt/spark/sbin/start-history-server.sh && tail -f /dev/null
+    ports:
+      - "18080:18080"
+    volumes:
+      - ./spark-events:/opt/spark-events

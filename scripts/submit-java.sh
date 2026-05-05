@@ -30,7 +30,7 @@ esac
 EXTRA_ARGS=("$@")
 
 echo "Building project inside spark-client-dev..."
-docker compose exec -T spark-client-dev bash -lc 'mvn -q -DskipTests package'
+docker compose exec -T spark-client-dev bash -lc 'mkdir -p /opt/spark-events && mvn -q -DskipTests package'
 
 echo "Resolving built jar..."
 JAR_PATH="$(docker compose exec -T spark-client-dev bash -lc 'ls -1 target/*.jar | grep -v "/original-" | grep -v -- "-sources\.jar" | grep -v -- "-javadoc\.jar" | head -n 1' | tr -d '\r')"
@@ -40,5 +40,18 @@ if [ -z "$JAR_PATH" ]; then
   exit 1
 fi
 
+echo "Live UI while job is running: http://localhost:4040"
+echo "Completed app history after finish: http://localhost:18080"
+
 echo "Submitting $JOB_NAME ($MAIN_CLASS) using $JAR_PATH"
-docker compose exec -T spark-client-dev bash -lc "/opt/spark/bin/spark-submit --master spark://spark-master:7077 --class $MAIN_CLASS $JAR_PATH $(printf '%q ' "${EXTRA_ARGS[@]}")"
+docker compose exec -T spark-client-dev bash -lc "/opt/spark/bin/spark-submit \
+  --master spark://spark-master:7077 \
+  --class $MAIN_CLASS \
+  --conf spark.ui.enabled=true \
+  --conf spark.ui.port=4040 \
+  --conf spark.ui.host=0.0.0.0 \
+  --conf spark.driver.bindAddress=0.0.0.0 \
+  --conf spark.eventLog.enabled=true \
+  --conf spark.eventLog.dir=file:/opt/spark-events \
+  --conf spark.history.fs.logDirectory=file:/opt/spark-events \
+  $JAR_PATH $(printf '%q ' "${EXTRA_ARGS[@]}")"

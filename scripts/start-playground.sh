@@ -10,11 +10,17 @@ docker info >/dev/null 2>&1 || {
   exit 1
 }
 
+mkdir -p "$ROOT_DIR/spark-events"
+
 echo "Starting persistent Spark playground services..."
-docker compose up -d spark-master spark-worker spark-client-dev
+docker compose up -d spark-master spark-worker spark-client-dev spark-history-server
 
 echo
 
-echo "Spark master UI: http://localhost:8080"
-echo "Spark worker UI: http://localhost:8081"
-echo "Dev shell: ./scripts/dev-shell.sh"
+echo "Spark Master UI: http://localhost:8080"
+echo "Spark Worker UI: http://localhost:8081"
+echo "Live Spark App UI: http://localhost:4040"
+echo "Spark History Server: http://localhost:18080"
+echo
+echo "Note: 4040 is available only while a Spark application is running."
+echo "Note: 18080 is for completed applications."
