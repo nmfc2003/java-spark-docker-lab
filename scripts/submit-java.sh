@@ -33,7 +33,7 @@ echo "Building project inside spark-client-dev..."
 docker compose exec -T spark-client-dev bash -lc 'mvn -q -DskipTests package'
 
 echo "Resolving built jar..."
-JAR_PATH="$(docker compose exec -T spark-client-dev bash -lc 'ls -1 target/*.jar | grep -v "/original-" | grep -v "-sources\.jar" | grep -v "-javadoc\.jar" | head -n 1' | tr -d '\r')"
+JAR_PATH="$(docker compose exec -T spark-client-dev bash -lc 'ls -1 target/*.jar | grep -v "/original-" | grep -v -- "-sources\.jar" | grep -v -- "-javadoc\.jar" | head -n 1' | tr -d '\r')"
 
 if [ -z "$JAR_PATH" ]; then
   echo "Could not find built jar in target/*.jar"
@@ -41,4 +41,4 @@ if [ -z "$JAR_PATH" ]; then
 fi
 
 echo "Submitting $JOB_NAME ($MAIN_CLASS) using $JAR_PATH"
-docker compose exec -T spark-client-dev bash -lc "spark-submit --master spark://spark-master:7077 --class $MAIN_CLASS $JAR_PATH $(printf '%q ' "${EXTRA_ARGS[@]}")"
+docker compose exec -T spark-client-dev bash -lc "/opt/spark/bin/spark-submit --master spark://spark-master:7077 --class $MAIN_CLASS $JAR_PATH $(printf '%q ' "${EXTRA_ARGS[@]}")"

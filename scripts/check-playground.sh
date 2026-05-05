@@ -19,6 +19,6 @@ for service in spark-master spark-worker spark-client-dev; do
 done
 
 echo "Checking tools in spark-client-dev..."
-docker compose exec -T spark-client-dev bash -lc 'java -version && mvn -version && spark-submit --version'
+docker compose exec -T spark-client-dev bash -lc 'java -version && mvn -version && /opt/spark/bin/spark-submit --version'
 
 echo "Playground check passed."
