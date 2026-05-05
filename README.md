@@ -175,3 +175,159 @@ Each job accepts explicit input and output paths after the job name.
 - swap CSV output for Parquet
 - add a new SQL report with temp views
 - add unit tests with local Spark
+
+## Interactive Spark Playground
+
+### Architecture
+
+```text
+Host IntelliJ
+   |
+   | edits repo files
+   v
+Mounted repo volume
+   |
+   v
+spark-client-dev container
+   |
+   | mvn package + spark-submit
+   v
+spark://spark-master:7077
+   |
+   v
+spark-worker
+```
+
+### Start persistent cluster
+
+```bash
+./scripts/start-playground.sh
+```
+
+This starts `spark-master`, `spark-worker`, and `spark-client-dev` and keeps them running until you stop them.
+
+### Enter the dev container
+
+```bash
+./scripts/dev-shell.sh
+```
+
+### Submit jobs repeatedly (without restarting cluster)
+
+```bash
+./scripts/submit-java.sh scratch
+./scripts/submit-java.sh wordcount
+./scripts/submit-java.sh sales
+./scripts/submit-java.sh sessions
+./scripts/submit-java.sh joins
+./scripts/submit-java.sh dedup
+./scripts/submit-java.sh json-metrics
+```
+
+You can also pass custom job args:
+
+```bash
+./scripts/submit-java.sh scratch /opt/spark-data/wordcount/input.txt /opt/spark-output/scratch-alt
+```
+
+### IntelliJ + Docker workflow
+
+1. Start playground once.
+2. Edit Java code locally in IntelliJ.
+3. Re-run `./scripts/submit-java.sh <job>` as often as needed.
+4. Spark master/worker stay up between submits.
+
+### Inspect output
+
+```bash
+find output -maxdepth 3 -type f | sort
+```
+
+Default data mount: `/opt/spark-data`  
+Default output mount: `/opt/spark-output`
+
+### Spark UI
+
+- Spark master UI: <http://localhost:8080>
+- Spark worker UI: <http://localhost:8081>
+
+### Stop cluster
+
+```bash
+./scripts/stop-playground.sh
+```
+
+### Add a new Java Spark job
+
+1. Add a class under `src/main/java/dev/cabinet/spark/jobs`.
+2. Add a new mapping in `scripts/submit-java.sh` from job name to class.
+3. Submit with `./scripts/submit-java.sh <new-job>`.
+
+### Playground health check
+
+```bash
+./scripts/check-playground.sh
+```
+
+### Makefile shortcuts
+
+```bash
+make up
+make shell
+make check
+make submit JOB=wordcount
+make scratch
+make down
+```
+
+### Troubleshooting
+
+- **Docker daemon not running**
+  - Start Docker Desktop or Docker Engine, then rerun `./scripts/start-playground.sh`.
+- **Spark master UI not available**
+  - Check services with `docker compose ps` and logs with `docker compose logs spark-master`.
+- **Maven build failed**
+  - Run `./scripts/dev-shell.sh`, then `mvn package` for detailed compiler output.
+- **Unknown job name**
+  - Use one of: `wordcount`, `sales`, `sessions`, `joins`, `dedup`, `json-metrics`, `scratch`.
+- **Output path already exists**
+  - Most jobs overwrite by default, but if you customize writes, remove path under `output/` or use a new output path.
+- **Permission issues in output directory**
+  - Fix ownership/permissions on `./output` so Docker can write files.
+- **Ports 8080/8081 already in use**
+  - Stop conflicting processes or change port mappings in `docker-compose.yml`.
+
+## Spark UI and History Server
+
+Spark exposes different UIs for different scopes:
+
+- `http://localhost:8080` = **Spark Master UI** (cluster-level scheduling/executors summary).
+- `http://localhost:8081` = **Spark Worker UI** (worker-level resources and executors).
+- `http://localhost:4040` = **Live Spark application (driver) UI**.
+  - This is available only while a Spark app is running.
+- `http://localhost:18080` = **Spark History Server** for completed applications.
+  - Completed jobs should be inspected here, not with sleep hacks.
+
+### Observability workflow
+
+```bash
+./scripts/start-playground.sh
+./scripts/submit-java.sh scratch
+```
+
+- While `scratch` is running, open `http://localhost:4040` to inspect live DAG/stages/jobs.
+- After it finishes, open `http://localhost:18080` and inspect the completed app.
+
+### Why 4040 may disappear quickly
+
+Short jobs can complete before you switch tabs. That is expected. The persistent place to inspect finished runs is History Server on `18080` with event logs from `./spark-events`.
+
+### Event log maintenance
+
+If you want to reset local history:
+
+```bash
+./scripts/clean-spark-events.sh
+```
+
+This clears local Spark event logs and removes app history from History Server.
