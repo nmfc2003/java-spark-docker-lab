@@ -50,3 +50,20 @@ services:
     volumes:
       - ./data:/opt/spark-data
       - ./output:/opt/spark-output
+
+  spark-client-dev:
+    build:
+      context: .
+      dockerfile: docker/spark-client-dev.Dockerfile
+    container_name: java-spark-client-dev
+    depends_on:
+      - spark-master
+      - spark-worker
+    working_dir: /workspace/java-spark-docker-lab
+    command: ["tail", "-f", "/dev/null"]
+    environment:
+      - SPARK_MASTER_URL=spark://spark-master:7077
+    volumes:
+      - ./:/workspace/java-spark-docker-lab
+      - ./data:/opt/spark-data
+      - ./output:/opt/spark-output
